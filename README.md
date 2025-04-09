@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Bates DCS Website
 
 A modern, responsive website for Bates DCS built with HTML, CSS, and JavaScript.
@@ -57,3 +58,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Contact
 
 For any questions or suggestions, please contact the development team.
+=======
+# dcs325_w2025_final_golf
+github repo for DCS 325 final -- minimum viable product
+>>>>>>> origin/main
