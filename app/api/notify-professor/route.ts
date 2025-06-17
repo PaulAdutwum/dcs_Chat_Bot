@@ -24,7 +24,7 @@ interface ProfessorMatch {
 export const faculty: FacultyMember[] = [
   {
     name: "Barry Lawson",
-    email: "blawson@bates.edu",
+    email: "padutwum@bates.edu",
     interests: ["algorithms", "programming", "robotics", "parallel computing", "cs education"],
     isDepartmentChair: true,
     isDefaultAdvisor: true

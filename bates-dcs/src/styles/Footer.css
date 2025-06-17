@@ -1,27 +1,79 @@
 /* Footer */
-footer {
-  background-color: white;
-  color: #333;
-  padding: 3rem 1rem 1rem;
-  margin-top: auto;
-  border-top: 3px solid #881124;
+.footer {
+  background-color: var(--bates-dark);
+  color: var(--bates-white);
+  padding: var(--spacing-xl) 0;
+  margin-top: var(--spacing-xl);
 }
 
 .footer-content {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 var(--spacing-md);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-xl);
 }
 
 .footer-section {
-  padding: 1rem;
+  margin-bottom: var(--spacing-lg);
 }
 
 .footer-section h3 {
-  margin-bottom: 1.5rem;
-  color: #881124;
+  color: var(--bates-primary);
+  margin-bottom: var(--spacing-md);
+  font-size: 1.2rem;
+}
+
+.footer-section p {
+  margin-bottom: var(--spacing-sm);
+  opacity: 0.9;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: var(--spacing-sm);
+}
+
+.footer-section a {
+  color: var(--bates-white);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+  color: var(--bates-primary);
+}
+
+.social-links {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.social-links a {
+  font-size: 1.5rem;
+  color: var(--bates-white);
+  transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+  color: var(--bates-primary);
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-bottom p {
+  opacity: 0.8;
+  font-size: 0.9rem;
 }
 
 /* FAQ Section */
@@ -140,34 +192,14 @@ footer {
   background-color: #6a0d1c;
 }
 
-/* Social Links */
-.social-links {
-  display: flex;
-  gap: 1rem;
-}
-
-.social-links a {
-  font-size: 1.5rem;
-  color: #881124;
-  transition: color 0.3s ease;
-}
-
-.social-links a:hover {
-  color: #6a0d1c;
-}
-
-.footer-bottom {
-  text-align: center;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(136, 17, 36, 0.2);
-  color: #666;
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
   .footer-content {
     grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .social-links {
+    justify-content: center;
   }
 
   .phone-screen {

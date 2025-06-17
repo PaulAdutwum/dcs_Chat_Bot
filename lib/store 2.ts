@@ -57,7 +57,7 @@ export const useChatStore = create<ChatStore>()(
       messages: [
         {
           id: '1',
-          text: 'Hello! I\'m your Bates DCS guide. How can I help you explore your DCS  journey at Bates College?',
+          text: 'Hello! I\'m your Bates DCS guide. How can I help you explore your computer science journey at Bates College?',
           sender: 'bot',
           timestamp: new Date(),
         },

@@ -6,20 +6,46 @@
 }
 
 :root {
-  --primary-color: #007bff;
-  --secondary-color: #6c757d;
-  --background-color: #ffffff;
-  --text-color: #333333;
+  --bates-primary: #881124; /* Bates Garnet */
+  --bates-secondary: #c41e3a; /* Lighter Garnet */
+  --bates-accent: #2c3e50; /* Dark Blue */
+  --bates-light: #f8f9fa; /* Light Gray */
+  --bates-dark: #333333; /* Dark Gray */
+  --bates-white: #ffffff;
+  --bates-black: #000000;
+  
+  --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-heading: 'Georgia', serif;
+  
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3rem;
+  --spacing-xl: 4rem;
+  
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 16px;
+  
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--font-primary);
   line-height: 1.6;
-  color: var(--text-color);
-  background-color: var(--background-color);
+  color: var(--bates-dark);
+  background-color: var(--bates-white);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--bates-primary);
+  margin-bottom: var(--spacing-sm);
 }
 
 #root {
@@ -30,24 +56,31 @@ body {
 }
 
 a {
-  color: var(--primary-color);
+  color: var(--bates-primary);
   text-decoration: none;
+  transition: color 0.3s ease;
 }
 
 a:hover {
-  text-decoration: underline;
+  color: var(--bates-secondary);
 }
 
 button {
   cursor: pointer;
-  padding: 0.5rem 1rem;
+  padding: var(--spacing-xs) var(--spacing-sm);
   border: none;
-  border-radius: 4px;
-  background-color: var(--primary-color);
-  color: white;
+  border-radius: var(--border-radius-sm);
+  background-color: var(--bates-primary);
+  color: var(--bates-white);
   font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
 button:hover {
-  opacity: 0.9;
-} 
+  background-color: var(--bates-secondary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Import Font Awesome */
+@import '@fortawesome/fontawesome-free/css/all.min.css'; 

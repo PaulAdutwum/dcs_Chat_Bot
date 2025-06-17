@@ -65,7 +65,112 @@ function getConversationState(userId: string): ConversationState {
   return conversationStates[userId];
 }
 
-// Modify the generateGuidingQuestion function to handle different user types
+// Add new action types for prospective students
+const PROSPECTIVE_STUDENT_ACTIONS = {
+  EXPLORE_INTERESTS: 'explore_interests',
+  PROGRAMMING_LANGUAGES: 'programming_languages',
+  CAREER_PATHS: 'career_paths',
+  RESEARCH_OPPS: 'research_opps',
+  COURSE_PLANNING: 'course_planning'
+};
+
+// Add new function to handle prospective student flow
+function handleProspectiveStudentFlow(action: string, message: string): string {
+  const messageLower = message.toLowerCase();
+  
+  switch (action) {
+    case PROSPECTIVE_STUDENT_ACTIONS.EXPLORE_INTERESTS:
+      return `Great! Let's explore your interests in DCS. Here are some key areas you might be interested in:
+
+• Programming and Software Development
+• Data Science and Analysis
+• Artificial Intelligence and Machine Learning
+• Web and Mobile Development
+• Digital Humanities
+• Cybersecurity
+• Game Development
+• Human-Computer Interaction
+
+Which of these areas interests you most? You can also tell me about other specific interests you have!`;
+
+    case PROSPECTIVE_STUDENT_ACTIONS.PROGRAMMING_LANGUAGES:
+      return `At Bates, you'll have the opportunity to learn several programming languages:
+
+• Python: Used in DCS 109D for data analysis and computational thinking
+• Java: Taught in DCS 211 for object-oriented programming
+• JavaScript: Used in DCS 229 for web development
+• R: Used in statistics and data science courses
+• SQL: For database management
+• HTML/CSS: For web development
+
+Would you like to know more about any specific language or see how it's used in our courses?`;
+
+    case PROSPECTIVE_STUDENT_ACTIONS.CAREER_PATHS:
+      return `DCS graduates pursue diverse career paths:
+
+• Software Engineering
+• Data Science and Analytics
+• Web Development
+• UX/UI Design
+• Cybersecurity
+• Research and Academia
+• Digital Humanities
+• Tech Consulting
+• Game Development
+• AI/ML Engineering
+
+Would you like to explore any of these career paths in more detail?`;
+
+    case PROSPECTIVE_STUDENT_ACTIONS.RESEARCH_OPPS:
+      return `Bates offers exciting research opportunities in DCS:
+
+• Summer Research Fellowships
+• Independent Study Projects
+• Senior Thesis Research
+• Faculty-Led Research Projects
+• Interdisciplinary Research Collaborations
+• External Research Internships
+
+Current research areas include:
+• Machine Learning and AI
+• Data Visualization
+• Digital Humanities
+• Human-Computer Interaction
+• Cybersecurity
+• Computational Biology
+
+Would you like to learn more about any specific research area or opportunity?`;
+
+    case PROSPECTIVE_STUDENT_ACTIONS.COURSE_PLANNING:
+      return `Let's plan your DCS journey! Here's a typical course sequence:
+
+First Year:
+• DCS 109D: Intro to Computational Problem Solving with Data
+• DCS 150: Digital Storytelling and Culture
+
+Second Year:
+• DCS 211: Data Structures and Algorithms
+• DCS 229: Web Development
+• Methods courses in your area of interest
+
+Third Year:
+• Advanced courses in your chosen track
+• Research opportunities
+• Internships
+
+Fourth Year:
+• Senior Seminar
+• Capstone Project
+• Advanced electives
+
+Would you like to explore any specific year or course in more detail?`;
+
+    default:
+      return `I'm here to help you explore the DCS program at Bates. What would you like to know more about?`;
+  }
+}
+
+// Modify the generateGuidingQuestion function to include new prospective student options
 function generateGuidingQuestion(state: ConversationState, message: string): string | null {
   const messageLower = message.toLowerCase();
   
@@ -118,31 +223,26 @@ function generateGuidingQuestion(state: ConversationState, message: string): str
     return "To help me provide more relevant information, could you tell me if you're a prospective student, current student, or faculty/staff member?";
   }
   
-  // For prospective students, focus on intro courses and major requirements
+  // For prospective students, add more comprehensive options
   if (state.userType === 'prospective') {
-    if (state.previousQuestions.length === 2) {
-      return `Thanks for letting me know you're a prospective student! I'll focus on information that will be most helpful to you.
-
-The DCS program at Bates offers several introductory courses that are perfect entry points:
-
-• DCS 109D: Intro to Computational Problem Solving with Data
-• DCS 109S: Intro to Computing for Problem Solving
-• DCS 109R: Intro to Computational Thinking with Robots
-• DCS 109T: Computing Across the Liberal Arts
-
-What specific aspects of computer science or digital studies interest you most?`;
+    if (messageLower.includes("programming") || messageLower.includes("coding") || messageLower.includes("code")) {
+      return handleProspectiveStudentFlow(PROSPECTIVE_STUDENT_ACTIONS.PROGRAMMING_LANGUAGES, message);
     }
     
-    // If they mention programming or coding
-    if (messageLower.includes("programming") || messageLower.includes("coding") || messageLower.includes("code")) {
-      return `For prospective students interested in programming, I recommend starting with:
-
-• DCS 109D if you're interested in working with data
-• DCS 109S if you want a strong general programming foundation
-
-No prior experience is needed for these courses! They're designed as entry points.
-
-Would you like to know more about what languages you'll learn or what projects you might work on?`;
+    if (messageLower.includes("career") || messageLower.includes("job") || messageLower.includes("work")) {
+      return handleProspectiveStudentFlow(PROSPECTIVE_STUDENT_ACTIONS.CAREER_PATHS, message);
+    }
+    
+    if (messageLower.includes("research") || messageLower.includes("study") || messageLower.includes("project")) {
+      return handleProspectiveStudentFlow(PROSPECTIVE_STUDENT_ACTIONS.RESEARCH_OPPS, message);
+    }
+    
+    if (messageLower.includes("course") || messageLower.includes("plan") || messageLower.includes("schedule")) {
+      return handleProspectiveStudentFlow(PROSPECTIVE_STUDENT_ACTIONS.COURSE_PLANNING, message);
+    }
+    
+    if (messageLower.includes("interest") || messageLower.includes("explore") || messageLower.includes("learn")) {
+      return handleProspectiveStudentFlow(PROSPECTIVE_STUDENT_ACTIONS.EXPLORE_INTERESTS, message);
     }
   }
   
@@ -193,7 +293,7 @@ What specific information about the DCS program would be most helpful to you?`;
       return `Based on your interests, these introductory courses would be excellent starting points:
 
 • DCS 109D: Intro to Computational Problem Solving with Data
-• DCS 109S: Intro to Computing for Problem Solving
+• DCS 109: Intro to Computer Science and Software Engineering
 
 No prior experience is needed for these courses. Which aspects of these courses sound most interesting to you?`;
     } else if (state.userType === 'current') {
@@ -361,7 +461,7 @@ function generatePersonalizedPlan(state: ConversationState): string {
   if (state.userType === 'prospective') {
     plan += ", here's a suggested starting path for your DCS journey at Bates:\n\n";
     plan += "**First Year Courses:**\n";
-    plan += "• DCS 109D or DCS 109S: Introduction to computational thinking and programming\n";
+    plan += "• DCS 109 or DCS 109S: Introduction to Computer Science and Software Engineering\n";
     plan += "• DCS 150: Digital Storytelling and Culture\n\n";
     
     plan += "**Second Year:**\n";
@@ -393,7 +493,7 @@ function generatePersonalizedPlan(state: ConversationState): string {
     // For faculty/staff or unknown user type
     plan += ", here are the key components of the DCS program:\n\n";
     plan += "**Foundation Courses (2):**\n";
-    plan += "• DCS 109 series (D, R, S, or T)\n";
+    plan += "• DCS 109 \n";
     plan += "• Software development course (DCS 211 or DCS 229)\n\n";
     
     plan += "**Methods Requirements (4):**\n";
@@ -506,209 +606,142 @@ Which language interests you most?`;
   return null;
 }
 
+// Add new function to format OpenAI responses
+function formatOpenAIResponse(response: string): string {
+  // Add markdown formatting for better readability
+  let formattedResponse = response;
+  
+  // Format headings
+  formattedResponse = formattedResponse.replace(/^#\s+(.+)$/gm, '**$1**\n');
+  
+  // Format bullet points
+  formattedResponse = formattedResponse.replace(/^•\s+(.+)$/gm, '• $1\n');
+  
+  // Format code blocks
+  formattedResponse = formattedResponse.replace(/```([\s\S]*?)```/g, '`$1`');
+  
+  // Format links
+  formattedResponse = formattedResponse.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1 ($2)');
+  
+  // Add spacing between sections
+  formattedResponse = formattedResponse.replace(/\n\n/g, '\n\n');
+  
+  return formattedResponse;
+}
+
+// Add new function to get Bates DCS context
+function getBatesDCSContext(): string {
+  return `You are a helpful assistant for the Bates College Digital and Computational Studies (DCS) program. 
+  Your responses should be informative, friendly, and focused on helping students explore the DCS major.
+  
+  Key information about Bates DCS:
+  - The program combines computer science with liberal arts
+  - Students can major or minor in DCS
+  - The program offers courses in programming, data science, AI, web development, and more
+  - Faculty include Professor Barry Lawson (Chair), Professor Matthew Jadud, and Professor Carrie Diaz Eaton
+  - The program emphasizes hands-on learning and real-world applications
+  
+  When responding:
+  - Use clear, concise language
+  - Format responses with bullet points and headings for readability
+  - Include specific course codes and names when relevant
+  - Provide links to official Bates resources when available
+  - Be encouraging and supportive of student interests
+  - Always maintain a professional but friendly tone`;
+}
+
+function processUserMessage(message: string, state: ConversationState): string {
+  const messageLower = message.toLowerCase();
+  
+  // Check for greetings and initial interactions
+  if (messageLower.includes("hello") || messageLower.includes("hi") || messageLower.includes("hey")) {
+    return "Hello! I'm your Bates DCS guide. How can I help you explore the Digital and Computational Studies program today?";
+  }
+  
+  // Check for user type if not set
+  if (!state.userType) {
+    if (messageLower.includes("prospective") || messageLower.includes("applying") || messageLower.includes("interested in")) {
+      state.userType = 'prospective';
+      return "Great! As a prospective student, I can help you explore the DCS program. What would you like to know about? You can ask about courses, programming languages, career paths, or research opportunities.";
+    } else if (messageLower.includes("current") || messageLower.includes("student") || messageLower.includes("taking")) {
+      state.userType = 'current';
+      return "Welcome back! As a current student, I can help you with course planning and program requirements. What courses are you currently taking or interested in?";
+    } else if (messageLower.includes("faculty") || messageLower.includes("staff") || messageLower.includes("professor")) {
+      state.userType = 'staff';
+      return "Hello! As faculty/staff, I can provide information about the DCS program structure and resources. What would you like to know?";
+    }
+  }
+  
+  // Process based on user type
+  if (state.userType === 'prospective') {
+    if (messageLower.includes("programming") || messageLower.includes("coding") || messageLower.includes("code")) {
+      return handleProspectiveStudentFlow(PROSPECTIVE_STUDENT_ACTIONS.PROGRAMMING_LANGUAGES, message);
+    }
+    
+    if (messageLower.includes("career") || messageLower.includes("job") || messageLower.includes("work")) {
+      return handleProspectiveStudentFlow(PROSPECTIVE_STUDENT_ACTIONS.CAREER_PATHS, message);
+    }
+    
+    if (messageLower.includes("research") || messageLower.includes("study") || messageLower.includes("project")) {
+      return handleProspectiveStudentFlow(PROSPECTIVE_STUDENT_ACTIONS.RESEARCH_OPPS, message);
+    }
+    
+    if (messageLower.includes("course") || messageLower.includes("plan") || messageLower.includes("schedule")) {
+      return handleProspectiveStudentFlow(PROSPECTIVE_STUDENT_ACTIONS.COURSE_PLANNING, message);
+    }
+    
+    if (messageLower.includes("interest") || messageLower.includes("explore") || messageLower.includes("learn")) {
+      return handleProspectiveStudentFlow(PROSPECTIVE_STUDENT_ACTIONS.EXPLORE_INTERESTS, message);
+    }
+  }
+  
+  // If no specific handler matches, generate a guiding question
+  return generateGuidingQuestion(state, message) || 
+    "I'm here to help you explore the DCS program. Could you tell me more about what interests you? You can ask about courses, programming languages, career paths, or research opportunities.";
+}
+
 export async function POST(req: Request) {
-  // Track start time for processing
   const startTime = Date.now();
+  let userMessage = "";
   
   try {
-    // Parse the request
-    const data = await req.json();
-    const { messages, systemPrompt, context, userId } = data;
+    const requestData = await req.json();
+    const { messages, userId } = requestData;
     
-    // Extract the user's message
-    const userMessage = messages[messages.length - 1].content;
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      throw new Error("Invalid message format");
+    }
     
-    // Get or initialize the conversation state
+    // Get conversation state
     const conversationState = getConversationState(userId || 'anonymous');
     
-    // Extract user type information from the message
-    extractUserTypeInfo(userMessage, conversationState);
+    // Extract user's message
+    userMessage = messages[messages.length - 1].content;
     
-    // Check for timeout frequently during processing
-    const checkTimeout = () => {
-      if (Date.now() - startTime > MAX_PROCESSING_TIME) {
-        throw new Error("Processing timeout");
-      }
-    };
+    // Process the message and get response
+    const processedResponse = processUserMessage(userMessage, conversationState);
     
-    // Check for interests in the user's message
-    const newInterests = extractInterestsFromMessage(userMessage);
-    checkTimeout();
+    // Update conversation state
+    conversationState.lastInteractionTime = Date.now();
     
-    // Update identified interests
-    Object.entries(newInterests).forEach(([category, strength]) => {
-      conversationState.identifiedInterests[category] = Math.max(
-        strength,
-        conversationState.identifiedInterests[category] || 0
-      );
-    });
-    
-    // Process content to enrich with specific DCS information
-    let enhancedContent = userMessage;
-    checkTimeout();
-    
-    // Check if this is a course inquiry
-    const courseCodeMatch = userMessage.match(/\b(DCS|MATH|STAT|ECON|PSYC|AV|MUS|THEA|PHYS)[0-9]{3}\b/i);
-    if (courseCodeMatch) {
-      const courseCode = courseCodeMatch[0].toUpperCase();
-      const course = findCourseByCode(courseCode);
-      if (course) {
-        enhancedContent = `[COURSE INFO REQUESTED: ${courseCode}] ${userMessage}`;
-        if (!conversationState.mentionedCourses.includes(courseCode)) {
-          conversationState.mentionedCourses.push(courseCode);
-        }
-      }
-    }
-    
-    checkTimeout();
-    
-    // Check if this is a professor inquiry
-    const facultyNames = faculty.map((prof: any) => prof.name?.split(' ')[1]).filter(Boolean); // Get last names
-    const professorMatch = facultyNames.find((name: string) => 
-      userMessage.toLowerCase().includes(name.toLowerCase())
-    );
-    if (professorMatch) {
-      const professor = findProfessorByName(professorMatch);
-      if (professor) {
-        enhancedContent = `[PROFESSOR INFO REQUESTED: ${professor.name}] ${userMessage}`;
-      }
-    }
-    
-    checkTimeout();
-    
-    // Check for career path mentions
-    Object.values(careerPaths).forEach((career: any) => {
-      if (userMessage.toLowerCase().includes(career.name.toLowerCase())) {
-        if (!conversationState.mentionedCareers.includes(career.name)) {
-          conversationState.mentionedCareers.push(career.name);
-        }
-      }
-    });
-    
-    checkTimeout();
-    
-    // Check for special commands to jump to specific phases
-    if (userMessage.toLowerCase().includes('/plan')) {
-      conversationState.explorationPhase = 'plan';
-    } else if (userMessage.toLowerCase().includes('/recommend')) {
-      conversationState.explorationPhase = 'plan';
-    } else if (userMessage.toLowerCase().includes('/courses')) {
-      conversationState.explorationPhase = 'courses';
-    } else if (userMessage.toLowerCase().includes('/careers')) {
-      conversationState.explorationPhase = 'careers';
-    } else if (userMessage.toLowerCase().includes('/interests')) {
-      conversationState.explorationPhase = 'interests';
-    } else if (userMessage.toLowerCase().includes('/reset')) {
-      conversationState.explorationPhase = 'initial';
-      conversationState.identifiedInterests = {};
-      conversationState.mentionedCourses = [];
-      conversationState.mentionedCareers = [];
-      conversationState.suggestedPlan = false;
-    }
-    
-    checkTimeout();
-    
-    // Check for programming questions first
-    const programmingResponse = processProgrammingQuestion(userMessage);
-    if (programmingResponse) {
-      return NextResponse.json({ 
-        response: programmingResponse,
-        success: true,
-        conversationPhase: conversationState.explorationPhase
-      });
-    }
-    
-    // Check if we should generate a guiding question
-    let response = generateGuidingQuestion(conversationState, userMessage);
-    
-    // If we've reached the plan phase, generate a personalized plan
-    if (conversationState.explorationPhase === 'plan' && !conversationState.suggestedPlan) {
-      response = generatePersonalizedPlan(conversationState);
-      conversationState.suggestedPlan = true;
-    }
-    
-    checkTimeout();
-    
-    // If no guiding question is needed, use the mock response
-    if (!response) {
-      // Provide different responses based on user type
-      if (conversationState.userType === 'prospective') {
-        if (userMessage.toLowerCase().includes("course") || userMessage.toLowerCase().includes("class")) {
-          response = `For prospective students, I recommend these introductory courses:
-
-• DCS 109D: Introduces computational thinking using data and Python
-• DCS 109S: Focuses on problem-solving and programming fundamentals
-• DCS 109R: Explores robotics and tangible computing
-• DCS 109T: Examines computing across the liberal arts
-
-These courses require no prior experience and provide an excellent foundation for the DCS major.
-
-Would you like more information about any specific course?`;
-        }
-      } else if (conversationState.userType === 'current') {
-        if (userMessage.toLowerCase().includes("course") || userMessage.toLowerCase().includes("class")) {
-          if (conversationState.coursesTaken && conversationState.coursesTaken.length > 0) {
-            response = `Based on your courses (${conversationState.coursesTaken.join(", ")}), here are recommended next steps:
-
-${getNextCourseRecommendations(conversationState.coursesTaken)}
-
-Would you like to speak with Professor Barry Lawson for personalized advising?`;
-          } else {
-            response = "As a current student, it would help if you could tell me which DCS courses you've already taken so I can provide appropriate recommendations.";
-          }
-        }
-      }
-      
-      // If we still don't have a specific response, use the general mock response
-      if (!response) {
-        response = generateMockResponse(userMessage);
-      }
-    }
-
-    // Check if the response is about courses and should include pathways
-    if ((!response || response.includes("course")) && 
-        (userMessage.includes("recommend") || userMessage.includes("pathway") || 
-         userMessage.includes("sequence") || userMessage.includes("path"))) {
-      
-      // Get the top interests
-      const topInterests = Object.entries(conversationState.identifiedInterests)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 2)
-        .map(([interest]) => interest)
-        .join(" ");
-      
-      response = recommendCoursePath(topInterests);
-    }
-
-    // Return successful response
-    return NextResponse.json({ 
-      response,
+    // Return formatted response
+    return NextResponse.json({
+      response: processedResponse,
       success: true,
       conversationPhase: conversationState.explorationPhase
     });
+    
   } catch (error) {
-    console.error('Error in chat endpoint:', error);
+    console.error("Error in chat endpoint:", error);
     
-    // Provide a fallback response even on error
-    let fallbackResponse;
-    try {
-      // Try to extract the user message from the request
-      const requestData = await req.json();
-      const userMessage = requestData.messages[requestData.messages.length - 1].content;
-      fallbackResponse = generateFallbackResponse(userMessage);
-    } catch (fallbackError) {
-      // If we can't even extract the message, provide a generic response
-      fallbackResponse = "I'm here to help you explore the Bates College Digital and Computational Studies program. What would you like to know about the major, courses, faculty, or career opportunities?";
-    }
+    // Provide a fallback response
+    const fallbackResponse = generateFallbackResponse(userMessage);
     
-    return NextResponse.json(
-      { 
-        error: 'There was an error processing your request',
-        response: fallbackResponse,
-        conversationPhase: 'initial'
-      },
-      { status: 200 } // Return 200 OK even on error to avoid client-side failures
-    );
+    return NextResponse.json({
+      error: "There was an error processing your request",
+      response: fallbackResponse,
+      conversationPhase: "initial"
+    }, { status: 200 });
   }
 }
 

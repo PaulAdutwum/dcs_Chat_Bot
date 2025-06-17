@@ -11,7 +11,9 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
             <div className="font-bold text-xl">Bates College</div>
-            <div className="ml-2 text-sm">Department of Computer Science</div>
+            <div className="ml-2 text-sm">
+              Digital and Computational Studies
+            </div>
           </div>
           <nav className="hidden md:flex space-x-6">
             <Link href="#" className="hover:underline">
@@ -44,7 +46,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-8 md:mb-0">
               <h1 className="text-4xl md:text-5xl font-bold text-[#800000] mb-4">
-                Department of Computer Science
+                Digital and Computational Studies
               </h1>
               <p className="text-lg text-gray-700 mb-6">
                 Explore the exciting world of computer science at Bates College.
@@ -122,7 +124,7 @@ export default function Home() {
       {/* Faculty Highlights */}
       <section className="py-16 bg-gray-100">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">
+          <h2 className="text-3xl font-bold text-center mb-12 text-[#800000]">
             Meet Our Faculty
           </h2>
 
@@ -130,32 +132,32 @@ export default function Home() {
             <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
               <div className="w-32 h-32 bg-gray-300 rounded-full mb-4"></div>
               <h3 className="text-xl font-bold text-[#800000]">
-                Dr. Jane Smith
+                Dr. Barry G. Lawson
               </h3>
               <p className="text-gray-600 mb-3">Department Chair</p>
-              <p className="text-gray-700 text-center">
-                Specializing in artificial intelligence and machine learning.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-              <div className="w-32 h-32 bg-gray-300 rounded-full mb-4"></div>
-              <h3 className="text-xl font-bold text-[#800000]">Dr. John Doe</h3>
-              <p className="text-gray-600 mb-3">Associate Professor</p>
-              <p className="text-gray-700 text-center">
-                Research focus on algorithms and computational complexity.
-              </p>
+              <p className="text-gray-700 text-center"></p>
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
               <div className="w-32 h-32 bg-gray-300 rounded-full mb-4"></div>
               <h3 className="text-xl font-bold text-[#800000]">
-                Dr. Emily Brown
+                Anelise H. Shrout
               </h3>
-              <p className="text-gray-600 mb-3">Assistant Professor</p>
-              <p className="text-gray-700 text-center">
-                Specializing in computer graphics and visualization.
+              <p className="text-gray-600 mb-3">
+                Associate Professor of Digital and Computational Studies
               </p>
+              <p className="text-gray-700 text-center"></p>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+              <div className="w-32 h-32 bg-gray-300 rounded-full mb-4"></div>
+              <h3 className="text-xl font-bold text-[#800000]">
+                Carrie Eaton Diaz
+              </h3>
+              <p className="text-gray-600 mb-3">
+                Associate Professor of Digital and Computational Studies
+              </p>
+              <p className="text-gray-700 text-center"></p>
             </div>
           </div>
 

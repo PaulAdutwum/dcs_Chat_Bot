@@ -423,6 +423,59 @@ const initialSuggestions: SuggestionButton[] = [
   },
 ];
 
+// Add professor contact buttons
+const professorContactButtons: SuggestionButton[] = [
+  {
+    id: "contact_lawson",
+    text: "Contact Prof. Lawson",
+    action: "I'd like to contact Professor Barry Lawson",
+  },
+  {
+    id: "schedule_meeting",
+    text: "Schedule Meeting",
+    action: "I'd like to schedule a meeting with Professor Lawson",
+  },
+  {
+    id: "back_to_topics",
+    text: "Back to Topics",
+    action: "I'd like to explore more DCS topics",
+  },
+];
+
+// Add new prospective student suggestion buttons with professor contact option
+const prospectiveStudentSuggestions: SuggestionButton[] = [
+  {
+    id: "explore_interests",
+    text: "Explore DCS Interests",
+    action: "I'd like to explore different areas of DCS",
+  },
+  {
+    id: "programming_languages",
+    text: "Programming Languages",
+    action: "What programming languages are taught in DCS?",
+  },
+  {
+    id: "career_paths",
+    text: "Career Opportunities",
+    action: "What career paths are available for DCS graduates?",
+  },
+  {
+    id: "research_opportunities",
+    text: "Research Opportunities",
+    action: "Tell me about research opportunities in DCS",
+  },
+  {
+    id: "course_planning",
+    text: "Course Planning",
+    action: "How should I plan my DCS courses?",
+  },
+  {
+    id: "contact_professor",
+    text: "Contact Professor",
+    action: "I'd like to speak with a professor about the DCS program",
+  },
+];
+
 export function ChatWindow({ isOpen, onClose }: ChatWindowProps) {
   const {
     messages,
@@ -778,6 +831,57 @@ Would you like to contact Professor Barry Lawson (Department Chair) for more inf
     });
   };
 
+  // Add this new function for step-based progress simulation (inside the ChatWindow component)
+  const advanceProgressInSteps = useCallback(
+    (initialJump = 30, maxProgress = 95) => {
+      // Reset progress first
+      resetProgressStore();
+
+      // Initial jump to show immediate feedback
+      incrementProgress(initialJump);
+
+      // Create a target to reach in each phase
+      const targets = [
+        { target: Math.min(60, maxProgress), interval: 300 }, // Phase 1: Quick progress
+        { target: Math.min(85, maxProgress), interval: 500 }, // Phase 2: Slower progress
+        { target: maxProgress, interval: 800 }, // Phase 3: Very slow progress
+      ];
+
+      let currentPhase = 0;
+      let interval: NodeJS.Timeout | null = null;
+
+      const advancePhase = () => {
+        if (currentPhase >= targets.length || !isLoading) {
+          if (interval) clearInterval(interval);
+          return;
+        }
+
+        const { target, interval: delay } = targets[currentPhase];
+
+        if (interval) clearInterval(interval);
+
+        interval = setInterval(() => {
+          incrementProgress(1);
+
+          // If we reach the target for this phase, move to next phase
+          if (progressValue >= target) {
+            currentPhase++;
+            advancePhase();
+          }
+        }, delay);
+      };
+
+      // Start the first phase
+      advancePhase();
+
+      // Cleanup function
+      return () => {
+        if (interval) clearInterval(interval);
+      };
+    },
+    [incrementProgress, resetProgressStore, progressValue, isLoading]
+  );
+
   // Handle message sending
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading || isTyping) return;
@@ -806,6 +910,74 @@ Would you like to contact Professor Barry Lawson (Department Chair) for more inf
       });
 
       setAskedUserType(true);
+      return;
+    }
+
+    // If user is a prospective student, show relevant suggestions
+    if (userType === "prospective") {
+      addMessage({
+        text: input,
+        sender: "user",
+      });
+
+      // Log user message
+      logUserInteraction("user_message", {
+        message: input,
+        timestamp: new Date().toISOString(),
+      });
+
+      setInput("");
+      setIsLoading(true);
+
+      try {
+        const response = await getHybridResponse(
+          input,
+          userType,
+          userCoursesTaken
+        );
+
+        // Check if the message is about contacting a professor
+        if (
+          input.toLowerCase().includes("contact") ||
+          input.toLowerCase().includes("professor") ||
+          input.toLowerCase().includes("lawson")
+        ) {
+          // Show professor contact options
+          addMessage({
+            text: `I'd be happy to help you connect with Professor Barry Lawson, the DCS Department Chair. You can:
+
+• Email him directly at blawson@bates.edu
+• Schedule a meeting through the DCS department
+• Learn more about his research and teaching
+
+What would you like to do?`,
+            sender: "bot",
+            suggestions: professorContactButtons,
+          });
+        } else {
+          // Add bot response with prospective student suggestions
+          addMessage({
+            text: response.text,
+            sender: "bot",
+            suggestions: prospectiveStudentSuggestions,
+          });
+        }
+
+        setIsLoading(false);
+
+        // Scroll to bottom
+        if (messagesEndRef.current) {
+          messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setIsLoading(false);
+        addMessage({
+          text: "I'm having trouble processing your request. Please try again.",
+          sender: "bot",
+          suggestions: prospectiveStudentSuggestions,
+        });
+      }
       return;
     }
 
@@ -890,15 +1062,16 @@ Would you like to contact Professor Barry Lawson (Department Chair) for more inf
     setInput("");
     setIsLoading(true);
 
-    // Show progress quickly to provide feedback
-    incrementProgress(40);
+    // Use the improved step-based progress function
+    const cleanupProgress = advanceProgressInSteps();
 
     try {
       // Generate a mock response for immediate feedback
       const mockResponse = generateMockResponse(input);
 
-      // Stop loading
+      // Stop loading and clean up the intervals
       setIsLoading(false);
+      cleanupProgress();
       resetProgressStore();
 
       // Add the response to the chat
@@ -917,6 +1090,7 @@ Would you like to contact Professor Barry Lawson (Department Chair) for more inf
     } catch (error) {
       console.error("Error:", error);
       setIsLoading(false);
+      cleanupProgress();
       resetProgressStore();
 
       addMessage({
@@ -977,69 +1151,47 @@ Would you like to contact Professor Barry Lawson (Department Chair) for more inf
     };
   }, [isResizing]);
 
-  // Update the email submission function to log to Supabase
-  const handleEmailSubmit = useCallback(async () => {
+  // Add new function to handle professor contact email submission
+  const handleProfessorEmailSubmit = async () => {
     if (!email.trim()) return;
 
     setIsLoading(true);
 
     try {
-      // Create a more personalized message for the professor
-      let customSummary = chatSummary;
+      // Create a personalized message for Professor Lawson
+      const messageContent = `Dear Professor Lawson,
 
-      // If no custom summary was set, generate one based on the conversation
-      if (!customSummary || customSummary.trim() === "") {
-        // Get recent messages from the chat
-        const recentMessages = messages.slice(-5);
+I'm interested in learning more about the DCS program at Bates College. Based on our conversation, I'm particularly interested in:
+${getTopInterests(3)
+  .map((interest) => `• ${interest.topic}`)
+  .join("\n")}
 
-        // Extract topics from the conversation
-        const topInterests = getTopInterests(2);
-        const interestString = topInterests.map((i) => i.topic).join(", ");
+I would appreciate the opportunity to discuss the program further.
 
-        // Always use Barry Lawson
-        customSummary = `Student is interested in the DCS program`;
-
-        if (userType) {
-          customSummary += `, and identified as a ${userType} student`;
-        }
-
-        if (userCoursesTaken && userCoursesTaken.length > 0) {
-          customSummary += `. They have taken: ${userCoursesTaken.join(", ")}`;
-        }
-
-        if (topInterests.length > 0) {
-          customSummary += `. Their interests include: ${interestString}`;
-        }
-
-        customSummary += `. They would like to speak with Professor Barry Lawson.`;
-      }
-
-      // Get current user ID for logging
-      const userId = await getUserId();
+Best regards,
+${email}`;
 
       // Log the email request to Supabase
       const { data, error } = await supabase.from("user_interactions").insert({
-        user_id: userId,
+        user_id: await getUserId(),
         interaction_type: "professor_contact",
         content: {
           to: "blawson@bates.edu",
           from: email,
           subject: "DCS Program Inquiry from Chatbot",
-          message: customSummary,
+          message: messageContent,
           userType,
           interests: getTopInterests(5).map((i) => i.topic),
         },
         created_at: new Date().toISOString(),
       });
 
-      // Log if there was an error inserting
       if (error) {
         console.error("Error logging to Supabase:", error);
-      } else {
-        console.log("Successfully logged to Supabase:", data);
+        throw error;
       }
 
-      // Make API call to send the actual email
+      // Send the email through the API
       const response = await fetch("/api/notify-professor", {
         method: "POST",
         headers: {
@@ -1047,67 +1199,58 @@ Would you like to contact Professor Barry Lawson (Department Chair) for more inf
         },
         body: JSON.stringify({
           email: email,
-          summary: customSummary,
-          selectedProfessor: "Barry Lawson", // Always defaulting to Barry for now
+          message: messageContent,
+          professor: "Barry Lawson",
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send email through API");
+        throw new Error("Failed to send email");
       }
 
-      // Add a bot message simulating the email being sent
+      // Add success message to chat
       addMessage({
-        text: `Great! I've sent your information to Professor Barry Lawson. He'll contact you at ${email} soon to discuss your ${userType === "current" ? "course planning" : "interest in the DCS program"}.`,
+        text: `Great! I've sent your message to Professor Barry Lawson. He'll contact you at ${email} soon to discuss your interest in the DCS program.`,
         sender: "bot",
         suggestions: [
           {
-            id: "continue",
-            text: "Continue exploring",
-            action: "I'd like to explore more options",
+            id: "explore_more",
+            text: "Explore More Topics",
+            action: "I'd like to learn more about DCS",
           },
           {
-            id: "thanks",
-            text: "Thank you",
-            action: "Thank you for your help",
+            id: "schedule_meeting",
+            text: "Schedule a Meeting",
+            action: "How can I schedule a meeting with Professor Lawson?",
           },
         ],
       });
 
-      // Reset email related states
+      // Reset email form
       setShowEmailPrompt(false);
       setEmail("");
-      setChatSummary("");
     } catch (error) {
       console.error("Error sending email:", error);
       addMessage({
-        text: "I'm having trouble sending the email right now. Could you try again? Alternatively, you can directly email Professor Barry Lawson at blawson@bates.edu.",
+        text: "I'm having trouble sending your message right now. You can directly email Professor Barry Lawson at blawson@bates.edu, or try again later.",
         sender: "bot",
         suggestions: [
           {
             id: "try_again",
-            text: "Try again",
-            action: "Let's try sending the email again",
+            text: "Try Again",
+            action: "I'd like to try sending the email again",
           },
           {
-            id: "direct_email",
-            text: "Get email address",
-            action: "What's Professor Barry Lawson's email address?",
+            id: "back_to_topics",
+            text: "Back to Topics",
+            action: "I'd like to explore more DCS topics",
           },
         ],
       });
     } finally {
       setIsLoading(false);
     }
-  }, [
-    email,
-    chatSummary,
-    messages,
-    getTopInterests,
-    userType,
-    userCoursesTaken,
-    addMessage,
-  ]);
+  };
 
   if (!isOpen) return null;
 
@@ -1230,14 +1373,38 @@ Would you like to contact Professor Barry Lawson (Department Chair) for more inf
 
       {/* Progress bar */}
       {isLoading && !isMinimized && (
-        <div className="h-1 w-full bg-gray-200 dark:bg-gray-700">
+        <div className="h-1.5 w-full bg-gray-200 dark:bg-gray-700 relative overflow-hidden rounded-sm">
+          {/* Background pulse effect */}
+          <div className="absolute inset-0 opacity-30 bg-gradient-to-r from-transparent via-blue-400 to-transparent animate-pulse"></div>
+
+          {/* Main progress bar */}
           <div
-            className="h-1 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
+            className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-r-sm transition-all duration-500 ease-out"
             style={{
               width: `${progressValue}%`,
               opacity: progressValue ? 1 : 0,
+              boxShadow: "0 0 8px rgba(79, 70, 229, 0.5)",
             }}
           ></div>
+
+          {/* Animated light effect */}
+          <div
+            className="absolute top-0 bottom-0 left-0 w-20 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-shimmer"
+            style={{
+              transform: `translateX(${progressValue * 2}%)`,
+              transition: "transform 0.5s ease-out",
+            }}
+          ></div>
+
+          {/* Loading percentage (optional) */}
+          {progressValue > 10 && (
+            <div
+              className="absolute top-0 right-0 text-xs px-1 text-white font-medium transition-opacity duration-300"
+              style={{ opacity: progressValue > 30 ? 0.8 : 0 }}
+            >
+              {Math.round(progressValue)}%
+            </div>
+          )}
         </div>
       )}
 
@@ -1262,27 +1429,47 @@ Would you like to contact Professor Barry Lawson (Department Chair) for more inf
         </div>
       )}
 
-      {/* Email prompt modal */}
+      {/* Enhanced Email prompt modal */}
       {showEmailPrompt && !isMinimized && (
         <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-          <h3 className="font-medium mb-2">
-            Enter your email to contact {selectedProfessor || "a professor"}:
-          </h3>
-          <div className="flex items-center">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="youremail@example.com"
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            />
-            <button
-              onClick={handleEmailSubmit}
-              disabled={!email.trim()}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-r-md disabled:opacity-50"
-            >
-              Send
-            </button>
+          <h3 className="font-medium mb-2">Contact Professor Barry Lawson</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            Enter your email address below, and I'll send Professor Lawson a
+            message about your interest in the DCS program.
+          </p>
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="youremail@example.com"
+                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => {
+                  setShowEmailPrompt(false);
+                  setEmail("");
+                  addMessage({
+                    text: "No problem! What else would you like to know about the DCS program?",
+                    sender: "bot",
+                    suggestions: prospectiveStudentSuggestions,
+                  });
+                }}
+                className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleProfessorEmailSubmit}
+                disabled={!email.trim() || isLoading}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md disabled:opacity-50 transition-colors duration-200"
+              >
+                {isLoading ? "Sending..." : "Send Message"}
+              </button>
+            </div>
           </div>
         </div>
       )}
