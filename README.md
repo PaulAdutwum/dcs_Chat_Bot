@@ -6,8 +6,7 @@ A modern, interactive chatbot for the Bates Digital & Computational Studies prog
 
 ## Features
 
-- 💬 **Interactive Chat Interface** - Engage in natural conversation with the DCS assistant
-- 📱 **Responsive Design** - Works seamlessly on desktop and mobile devices
+- 💬 **Interactive Chat Interface** - Engage in conversation with the DCS assistant
 - 🎓 **Program Information** - Access details about the DCS major, courses, and career paths
 - 👨‍🏫 **Faculty Contact** - Connect with professors directly through the chatbot
 - 📊 **Interest Tracking** - Personalizes responses based on user interests
