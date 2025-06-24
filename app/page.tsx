@@ -610,7 +610,14 @@ export default function Home() {
                   lineHeight: { xs: 1.2, sm: 1.3, md: 1.4 },
                   '& .second-line': {
                     display: 'block',
-                    whiteSpace: 'nowrap',
+                    whiteSpace: { xs: 'normal', sm: 'nowrap' }
+                  },
+                  '& .mobile-break': {
+                    display: { xs: 'block', sm: 'inline' }
+                  },
+                  '& .at-bates': {
+                    display: 'inline-block',
+                    marginTop: { xs: '0.2em', sm: 0 }
                   },
                   '&::after': {
                     content: '""',
@@ -634,7 +641,10 @@ export default function Home() {
                 }}
               >
                 Explore Digital and<br />
-                <span className="second-line">Computational Studies at Bates</span>
+                <span className="second-line">
+                  Computational Studies<span className="mobile-break"> </span>
+                  <span className="at-bates">at Bates</span>
+                </span>
               </Typography>
               <Typography
                 variant="h2"
