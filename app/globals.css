@@ -1,5 +1,7 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import './bates-theme.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
 
@@ -79,8 +81,9 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  --bates-primary: #800000;
-  --bates-secondary: #b30000;
+  --bates-primary: #881124;
+  --bates-secondary: #6d0e1d;
+  --colorGarnet: #881124;
 }
 
 .dark {
@@ -119,10 +122,10 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     color: rgb(var(--foreground-rgb));
     background: linear-gradient(
       to bottom,
@@ -219,7 +222,7 @@
     transform: translateY(0);
   }
   100% {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
   }
 }
 
@@ -250,10 +253,80 @@
 
 /* Animation for the course recommendation card */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.3s ease-out forwards;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Add Bates-specific overrides */
+.MuiButton-root {
+  text-transform: none !important;
+  font-family: var(--fontSansSerif) !important;
+}
+
+.MuiTypography-root {
+  font-family: var(--fontSansSerif) !important;
+}
+
+.MuiTypography-h1,
+.MuiTypography-h2,
+.MuiTypography-h3,
+.MuiTypography-h4,
+.MuiTypography-h5,
+.MuiTypography-h6 {
+  font-family: var(--fontSerif) !important;
+}
+
+/* Hero section specific styles */
+.hero-section {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  color: white;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Breadcrumb styles */
+.breadcrumb {
+  font-family: var(--fontSansSerif);
+  font-size: 13.5px;
+  color: var(--colorGray);
+}
+
+.breadcrumb a {
+  color: var(--colorLink);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* Footer styles */
+footer {
+  margin-top: auto;
+}
+
+footer a {
+  transition: color 0.2s ease;
+}
+
+footer a:hover {
+  color: var(--colorGarnet);
 }

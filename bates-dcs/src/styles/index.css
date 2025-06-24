@@ -80,7 +80,7 @@ button:hover {
   background-color: var(--bates-secondary);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
-}
+} 
 
 /* Import Font Awesome */
 @import '@fortawesome/fontawesome-free/css/all.min.css'; 

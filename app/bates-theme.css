@@ -1,0 +1,53 @@
+:root {
+  /* Colors */
+  --colorGarnet: hsl(350, 78%, 30%);
+  --colorGarnet_bright: hsl(351, 80%, 34%);
+  --colorGarnet_dark: hsl(349, 98%, 18%);
+  --colorGarnet_dark2: hsl(350, 97%, 12%);
+  --colorGray: hsl(0, 0%, 44%);
+  --colorGray_light: hsl(0, 0%, 94%);
+  --colorBlue: hsl(198, 86%, 27%);
+  --colorBlue_bright: hsl(195, 61%, 46%);
+  --colorBlue_dark: hsl(198, 94%, 14%);
+  --colorBlue_light: hsl(192, 95%, 80%);
+  --colorGreen: hsl(57, 66%, 22%);
+  --colorGreen_bright: hsl(55, 60%, 44%);
+  --colorLink: hsl(198, 86%, 34%);
+  --colorLink_light: hsl(192, 95%, 80%);
+
+  /* Typography */
+  --fontSerif: "Sabon Next W01", Georgia, serif;
+  --fontSansSerif: "Neue Frutiger W01", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Sizes */
+  --buttonHeight: 2.7rem;
+  --buttonMarginBlock: 1rem;
+  --buttonBorderWidth: 3px;
+  --extraImageBottomPad: 3.5rem;
+}
+
+/* Base styles */
+body {
+  font-family: var(--fontSansSerif);
+  font-weight: 400;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--fontSerif);
+  margin: 0;
+  padding: 0;
+}
+
+/* Header styles */
+.site-header {
+  position: relative;
+  background-color: #f2f2f2;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  height: 400px;
+} 
