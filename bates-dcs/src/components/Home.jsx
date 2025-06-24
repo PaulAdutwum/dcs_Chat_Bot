@@ -6,7 +6,7 @@ const Home = () => {
   return (
     <div className="home-container">
       <section className="hero">
-        <div className="hero-content">
+      <div className="hero-content">
           <h1>Welcome to Digital and Computational Studies</h1>
           <p className="hero-subtitle">Your Gateway to Academic Success</p>
           <div className="hero-buttons">
@@ -35,8 +35,8 @@ const Home = () => {
           <i className="fas fa-lightbulb"></i>
           <h3>Resources</h3>
           <p>Access to valuable academic resources</p>
-        </div>
-      </section>
+      </div>
+    </section>
     </div>
   );
 };

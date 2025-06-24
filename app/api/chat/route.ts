@@ -610,16 +610,16 @@ Which language interests you most?`;
 function formatOpenAIResponse(response: string): string {
   // Add markdown formatting for better readability
   let formattedResponse = response;
-  
+    
   // Format headings
   formattedResponse = formattedResponse.replace(/^#\s+(.+)$/gm, '**$1**\n');
-  
+    
   // Format bullet points
   formattedResponse = formattedResponse.replace(/^•\s+(.+)$/gm, '• $1\n');
-  
+    
   // Format code blocks
   formattedResponse = formattedResponse.replace(/```([\s\S]*?)```/g, '`$1`');
-  
+    
   // Format links
   formattedResponse = formattedResponse.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1 ($2)');
   
@@ -652,11 +652,11 @@ function getBatesDCSContext(): string {
 
 function processUserMessage(message: string, state: ConversationState): string {
   const messageLower = message.toLowerCase();
-  
+    
   // Check for greetings and initial interactions
   if (messageLower.includes("hello") || messageLower.includes("hi") || messageLower.includes("hey")) {
     return "Hello! I'm your Bates DCS guide. How can I help you explore the Digital and Computational Studies program today?";
-  }
+        }
   
   // Check for user type if not set
   if (!state.userType) {
@@ -684,7 +684,7 @@ function processUserMessage(message: string, state: ConversationState): string {
     
     if (messageLower.includes("research") || messageLower.includes("study") || messageLower.includes("project")) {
       return handleProspectiveStudentFlow(PROSPECTIVE_STUDENT_ACTIONS.RESEARCH_OPPS, message);
-    }
+        }
     
     if (messageLower.includes("course") || messageLower.includes("plan") || messageLower.includes("schedule")) {
       return handleProspectiveStudentFlow(PROSPECTIVE_STUDENT_ACTIONS.COURSE_PLANNING, message);
@@ -698,7 +698,7 @@ function processUserMessage(message: string, state: ConversationState): string {
   // If no specific handler matches, generate a guiding question
   return generateGuidingQuestion(state, message) || 
     "I'm here to help you explore the DCS program. Could you tell me more about what interests you? You can ask about courses, programming languages, career paths, or research opportunities.";
-}
+          }
 
 export async function POST(req: Request) {
   const startTime = Date.now();
@@ -725,7 +725,7 @@ export async function POST(req: Request) {
     conversationState.lastInteractionTime = Date.now();
     
     // Return formatted response
-    return NextResponse.json({
+    return NextResponse.json({ 
       response: processedResponse,
       success: true,
       conversationPhase: conversationState.explorationPhase
@@ -739,7 +739,7 @@ export async function POST(req: Request) {
     
     return NextResponse.json({
       error: "There was an error processing your request",
-      response: fallbackResponse,
+        response: fallbackResponse,
       conversationPhase: "initial"
     }, { status: 200 });
   }
